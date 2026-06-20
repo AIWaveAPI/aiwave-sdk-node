@@ -1,0 +1,32 @@
+{
+  "name": "aiwave",
+  "version": "0.1.0",
+  "description": "AIWave API \u2014 One API key for 50+ Chinese AI models. OpenAI compatible, drop-in replacement.",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "ai",
+    "llm",
+    "deepseek",
+    "openai",
+    "sdk",
+    "aiwave",
+    "chinese-ai",
+    "glm",
+    "kimi"
+  ],
+  "homepage": "https://aiwave.live",
+  "repository": "github:chawkian/aiwave-sdk-node",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "openai": "^4.0.0"
+  }
+}
