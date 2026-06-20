@@ -21,7 +21,7 @@
     "kimi"
   ],
   "homepage": "https://aiwave.live",
-  "repository": "github:chawkian/aiwave-sdk-node",
+  "repository": "github:AIWaveAPI/aiwave-sdk-node",
   "license": "MIT",
   "engines": {
     "node": ">=18"
