@@ -1,7 +1,7 @@
 {
   "name": "aiwave",
   "version": "0.1.0",
-  "description": "AIWave API \u2014 One API key for 50+ Chinese AI models. OpenAI compatible, drop-in replacement.",
+  "description": "AIWave API — One API key for 48 Chinese AI models. OpenAI compatible, drop-in replacement.",
   "main": "src/index.js",
   "types": "src/index.d.ts",
   "files": [
@@ -21,7 +21,7 @@
     "kimi"
   ],
   "homepage": "https://aiwave.live",
-  "repository": "github:AIWaveAPI/aiwave-sdk-node",
+  "repository": "https://github.com/AIWaveAPI/aiwave-sdk-node",
   "license": "MIT",
   "engines": {
     "node": ">=18"
