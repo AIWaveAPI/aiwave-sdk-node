@@ -1,13 +1,13 @@
 # AIWave Node.js SDK
 
-**One OpenAI-compatible API for Chinese AI models — and AI video. 128 live routes, 9 families, 13 video generation routes.**
+**One OpenAI-compatible API for Chinese AI models — and AI video. 97 public routes, 10 Chinese families, 10 public video routes.**
 
 [![npm version](https://img.shields.io/npm/v/aiwave)](https://www.npmjs.com/package/aiwave)
-[![Models](https://img.shields.io/badge/models-128%20live%20routes-blue)](https://aiwave.live/models)
-[![Video](https://img.shields.io/badge/video-13%20generation%20routes-purple)](https://aiwave.live/models)
+[![Models](https://img.shields.io/badge/public%20rate%20card-97%20routes-blue)](https://aiwave.live/models)
+[![Video](https://img.shields.io/badge/public%20video%20routes-10-purple)](https://aiwave.live/models)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-AIWave gives developers one OpenAI-compatible API route for Chinese AI model families — DeepSeek, GLM, Kimi, Qwen, ERNIE, MiniMax, Doubao, StepFun, MiMo — plus AI video routes (Kling, Seedance, Hailuo, Wan, Vidu).
+AIWave gives developers one OpenAI-compatible API route for Chinese AI model families — DeepSeek, GLM, Kimi, Qwen, MiniMax, Doubao, StepFun, MiMo — plus AI video routes (Kling, Seedance, Hailuo, Wan, Vidu).
 
 Get a key at [aiwave.live/register](https://aiwave.live/register) — free tier included.
 
