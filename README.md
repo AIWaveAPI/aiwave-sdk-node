@@ -57,6 +57,28 @@ const response = await client.chat.completions.create({
 console.log(response.usage);
 ```
 
+## AI video
+
+One key, video routes on Kling, Seedance, Hailuo, Wan and Vidu.
+
+```js
+const AIWave = require('aiwave');
+
+const client = new AIWave({ apiKey: 'YOUR_API_KEY_HERE' });
+
+const job = await client.video.generate({
+  model: 'kling-v2-6',
+  prompt: 'A red sports car drifting through a neon-lit city at night, cinematic tracking shot',
+});
+console.log(job.taskId);
+
+const done = await client.video.wait(job.taskId);  // polls every 15s, 15 min max
+console.log(done.status);
+```
+
+Video routes are experimental and need a paid account group (from $5). A single
+shot takes 5-11 minutes.
+
 ## What to verify before production
 
 - Confirm the current model ID in the [AIWave model catalog](https://aiwave.live/models/).
