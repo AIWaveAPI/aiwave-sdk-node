@@ -3,6 +3,10 @@
   "version": "0.2.0",
   "description": "AIWave API — One API key for 97 AI routes (10 Chinese families + video). OpenAI compatible, drop-in replacement.",
   "main": "src/index.js",
+  "scripts": {
+    "test": "node --test",
+    "test:types": "tsc --noEmit --strict --module node16 --moduleResolution node16 tests/types-cjs.cts tests/types-esm.mts tests/types-named.mts"
+  },
   "types": "src/index.d.ts",
   "files": [
     "src/",
@@ -35,9 +39,6 @@
   },
   "devDependencies": {
     "typescript": "5.9.3"
-  },
-  "scripts": {
-    "test:types": "tsc --noEmit --strict --module node16 --moduleResolution node16 tests/types-cjs.cts tests/types-esm.mts tests/types-named.mts"
   }
 }
 

@@ -5,8 +5,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 /**
  * AIWave video generation routes.
  *
- * Video routes are experimental and require a paid account group (from $5).
- * A single shot takes 5-11 minutes; poll `status()` until it reports success.
+ * Video routes are experimental and require an eligible paid account group.
+ * Completion time varies; poll `status()` and retain the task ID.
  */
 class VideoAPI {
   constructor(client) {
@@ -23,8 +23,15 @@ class VideoAPI {
       body: { model, prompt, ...rest },
     });
     const data = resp?.data ?? resp;
+    const taskId = data?.task_id ?? data?.id;
+    if (typeof taskId !== 'string' || !taskId) {
+      throw new Error(
+        'Video submission returned no task ID; check task history and usage ' +
+          'before submitting another paid job.'
+      );
+    }
     return {
-      taskId: data?.task_id ?? data?.id,
+      taskId,
       status: data?.status ?? 'queued',
       raw: data,
     };
@@ -62,8 +69,7 @@ class VideoAPI {
     }
     throw new Error(
       `Video job ${taskId} did not finish within ${timeout / 1000}s. ` +
-        'Single shots take 5-11 minutes; if it stays at 0% progress for over 3 minutes, ' +
-        'the upstream channel likely failed — submit again.'
+        'Keep the task ID and check its status and usage before submitting another paid job.'
     );
   }
 }
@@ -74,14 +80,14 @@ class VideoAPI {
  */
 class AIWave extends OpenAI {
   constructor(options = {}) {
-    const apiKey = options.apiKey || process.env.AIWAVE_API_KEY || process.env.OPENAI_API_KEY;
+    const apiKey = options.apiKey || process.env.AIWAVE_API_KEY;
     if (!apiKey) {
-      throw new Error('API key required. Get your API key at https://aiwave.live');
+      throw new Error('AIWave API key required. Pass apiKey or set AIWAVE_API_KEY.');
     }
     super({
+      ...options,
       apiKey,
       baseURL: options.baseURL || 'https://aiwave.live/v1',
-      ...options
     });
     this.video = new VideoAPI(this);
   }

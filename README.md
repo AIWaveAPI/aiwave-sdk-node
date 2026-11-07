@@ -35,7 +35,7 @@ console.log(response.choices[0].message.content);
 console.log(response.usage);
 ```
 
-Store API keys outside source control. The example above uses an environment variable and does not include a real key.
+Store API keys outside source control. The example above uses an environment variable and does not include a real key. The AIWave client accepts an explicit `apiKey` or `AIWAVE_API_KEY`; it never takes `OPENAI_API_KEY` from another provider's environment.
 
 ## OpenAI-compatible client path
 
@@ -76,8 +76,9 @@ const done = await client.video.wait(job.taskId);  // polls every 15s, 15 min ma
 console.log(done.status);
 ```
 
-Video routes are experimental and need a paid account group (from $5). A single
-shot takes 5-11 minutes.
+Video routes are experimental and need an eligible paid account group.
+Completion time varies. Keep the task ID and check its status and usage before
+submitting another paid job if polling times out.
 
 ## What to verify before production
 
