@@ -6,7 +6,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
  * AIWave video generation routes.
  *
  * Video routes are experimental and require a paid account group (from $5).
- * A single shot takes 5-11 minutes; poll `status()` until it reports success.
+ * Completion time varies; poll `status()` and retain the task ID.
  */
 class VideoAPI {
   constructor(client) {
@@ -62,8 +62,7 @@ class VideoAPI {
     }
     throw new Error(
       `Video job ${taskId} did not finish within ${timeout / 1000}s. ` +
-        'Single shots take 5-11 minutes; if it stays at 0% progress for over 3 minutes, ' +
-        'the upstream channel likely failed — submit again.'
+        'Keep the task ID and check its status and usage before submitting another paid job.'
     );
   }
 }
