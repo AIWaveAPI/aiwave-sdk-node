@@ -32,5 +32,12 @@
   },
   "dependencies": {
     "openai": "^4.0.0"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "test:types": "tsc --noEmit --strict --module node16 --moduleResolution node16 tests/types-cjs.cts tests/types-esm.mts"
   }
 }
+
