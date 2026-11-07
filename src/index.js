@@ -5,7 +5,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 /**
  * AIWave video generation routes.
  *
- * Video routes are experimental and require a paid account group (from $5).
+ * Video routes are experimental and require an eligible paid account group.
  * Completion time varies; poll `status()` and retain the task ID.
  */
 class VideoAPI {

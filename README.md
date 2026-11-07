@@ -76,7 +76,7 @@ const done = await client.video.wait(job.taskId);  // polls every 15s, 15 min ma
 console.log(done.status);
 ```
 
-Video routes are experimental and need a paid account group (from $5).
+Video routes are experimental and need an eligible paid account group.
 Completion time varies. Keep the task ID and check its status and usage before
 submitting another paid job if polling times out.
 
