@@ -23,8 +23,15 @@ class VideoAPI {
       body: { model, prompt, ...rest },
     });
     const data = resp?.data ?? resp;
+    const taskId = data?.task_id ?? data?.id;
+    if (typeof taskId !== 'string' || !taskId) {
+      throw new Error(
+        'Video submission returned no task ID; check task history and usage ' +
+          'before submitting another paid job.'
+      );
+    }
     return {
-      taskId: data?.task_id ?? data?.id,
+      taskId,
       status: data?.status ?? 'queued',
       raw: data,
     };
