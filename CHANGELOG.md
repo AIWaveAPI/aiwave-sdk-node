@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.1 (2026-11-08)
+
+- Fix API-key isolation: only an explicit `apiKey` or `AIWAVE_API_KEY` is accepted. `OPENAI_API_KEY` is never borrowed from another provider, and an undefined `apiKey` option cannot override the resolved AIWave key.
+- Migration: if you previously relied on `OPENAI_API_KEY`, set `AIWAVE_API_KEY` to your AIWave-issued key or pass that key explicitly. Do not copy another provider's key.
+- Reject video submissions without a usable task ID. Timeout guidance now preserves the task ID and asks users to check status and usage before resubmitting.
+- Fix TypeScript declarations for CommonJS, ESM, named imports, and the exported VideoAPI constructor.
+- Add synthetic regression and declaration checks on Node 18, 20, and 22. No paid model requests are required for these checks.
+
 ## v0.2.0 (2026-11-04)
 
 - **AI video support** — `client.video.generate({ model, prompt })` submits a job, `client.video.status(taskId)` checks it, `client.video.wait(taskId)` polls until done (15 min default timeout, throws on upstream failure)

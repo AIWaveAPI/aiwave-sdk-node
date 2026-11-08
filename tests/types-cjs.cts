@@ -7,4 +7,3 @@ const status: Promise<AIWave.VideoStatus> = client.video.wait(job.taskId);
 
 void submitted;
 void status;
-
