@@ -11,6 +11,8 @@ declare class AIWave extends OpenAI {
 }
 
 declare namespace AIWave {
+  export { AIWave };
+
   export interface VideoJob {
     taskId: string;
     status: string;
@@ -33,6 +35,8 @@ declare namespace AIWave {
   }
 
   export class VideoAPI {
+    constructor(client: OpenAI);
+
     /** Submit a video generation job. */
     generate(params: {
       model?: string;
@@ -49,4 +53,3 @@ declare namespace AIWave {
 }
 
 export = AIWave;
-
