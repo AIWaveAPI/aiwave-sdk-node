@@ -80,14 +80,14 @@ class VideoAPI {
  */
 class AIWave extends OpenAI {
   constructor(options = {}) {
-    const apiKey = options.apiKey || process.env.AIWAVE_API_KEY || process.env.OPENAI_API_KEY;
+    const apiKey = options.apiKey || process.env.AIWAVE_API_KEY;
     if (!apiKey) {
-      throw new Error('API key required. Get your API key at https://aiwave.live');
+      throw new Error('AIWave API key required. Pass apiKey or set AIWAVE_API_KEY.');
     }
     super({
+      ...options,
       apiKey,
       baseURL: options.baseURL || 'https://aiwave.live/v1',
-      ...options
     });
     this.video = new VideoAPI(this);
   }
