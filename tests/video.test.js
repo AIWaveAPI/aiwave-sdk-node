@@ -50,8 +50,8 @@ test('status treats an opaque task ID as one URL path segment', async () => {
       });
     },
   });
-  await client.video.status('job?mode=unsafe#fragment');
-  assert.equal(observed.pathname, '/v1/video/generations/job%3Fmode%3Dunsafe%23fragment');
+  await client.video.status('job/part?mode=unsafe#fragment');
+  assert.equal(observed.pathname, '/v1/video/generations/job%2Fpart%3Fmode%3Dunsafe%23fragment');
   assert.equal(observed.search, '');
   assert.equal(observed.hash, '');
 });
