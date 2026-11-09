@@ -9,8 +9,9 @@ function clientWithResponses(submit, poll) {
     baseURL: 'https://example.invalid/v1',
     maxRetries: 0,
     fetch: async (url, options) => {
-      seen.push([options.method, new URL(url).pathname]);
-      const body = options.method === 'POST' ? submit : poll;
+      const method = options.method.toUpperCase();
+      seen.push([method, new URL(url).pathname]);
+      const body = method === 'POST' ? submit : poll;
       return new Response(JSON.stringify(body), {
         status: 200,
         headers: { 'content-type': 'application/json' },
@@ -51,7 +52,7 @@ test('a transient video submission failure is not automatically resubmitted', as
       baseURL: 'https://example.invalid/v1',
       // Deliberately use the OpenAI client's default retry policy.
       fetch: async (_url, options) => {
-        if (options.method !== 'POST') throw new Error('unexpected polling request');
+        if (options.method.toUpperCase() !== 'POST') throw new Error('unexpected polling request');
         posts += 1;
         if (posts === 1) {
           return new Response(JSON.stringify({ error: { message: 'upstream unavailable' } }), {
