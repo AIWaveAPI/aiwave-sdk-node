@@ -44,7 +44,10 @@ class VideoAPI {
    * @returns {Promise<{status: string, progress: string, raw: object}>}
    */
   async status(taskId) {
-    const resp = await this._client.get(`/video/generations/${taskId}`);
+    if (typeof taskId !== 'string' || !taskId) {
+      throw new Error('status requires a non-empty task ID');
+    }
+    const resp = await this._client.get(`/video/generations/${encodeURIComponent(taskId)}`);
     const data = resp?.data ?? resp;
     return {
       status: data?.status ?? 'unknown',

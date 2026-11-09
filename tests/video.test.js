@@ -36,6 +36,40 @@ test('video submission and poll parse nested JSON', async () => {
   ]);
 });
 
+test('status treats an opaque task ID as one URL path segment', async () => {
+  let observed;
+  const client = new AIWave({
+    apiKey: 'synthetic-only',
+    baseURL: 'https://example.invalid/v1',
+    maxRetries: 0,
+    fetch: async (url) => {
+      observed = new URL(url);
+      return new Response(JSON.stringify({ data: { status: 'SUCCESS' } }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    },
+  });
+  await client.video.status('job?mode=unsafe#fragment');
+  assert.equal(observed.pathname, '/v1/video/generations/job%3Fmode%3Dunsafe%23fragment');
+  assert.equal(observed.search, '');
+  assert.equal(observed.hash, '');
+});
+
+test('status refuses an empty task ID before sending a request', async () => {
+  let requests = 0;
+  const client = new AIWave({
+    apiKey: 'synthetic-only',
+    baseURL: 'https://example.invalid/v1',
+    fetch: async () => {
+      requests += 1;
+      throw new Error('request should not be sent');
+    },
+  });
+  await assert.rejects(client.video.status(''), /non-empty task ID/);
+  assert.equal(requests, 0);
+});
+
 test('missing task ID is not treated as successful submission', async () => {
   const { client } = clientWithResponses({ data: { status: 'IN_PROGRESS' } });
   await assert.rejects(
