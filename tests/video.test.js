@@ -43,6 +43,49 @@ test('missing task ID is not treated as successful submission', async () => {
   );
 });
 
+test('a transient video submission failure is not automatically resubmitted', async () => {
+  for (const status of [429, 503]) {
+    let posts = 0;
+    const client = new AIWave({
+      apiKey: 'synthetic-only',
+      baseURL: 'https://example.invalid/v1',
+      // Deliberately use the OpenAI client's default retry policy.
+      fetch: async (_url, options) => {
+        if (options.method !== 'POST') throw new Error('unexpected polling request');
+        posts += 1;
+        if (posts === 1) {
+          return new Response(JSON.stringify({ error: { message: 'upstream unavailable' } }), {
+            status,
+            headers: { 'content-type': 'application/json' },
+          });
+        }
+        return new Response(JSON.stringify({ data: { task_id: 'duplicate-paid-job' } }), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        });
+      },
+    });
+
+    await assert.rejects(client.video.generate({ prompt: 'synthetic prompt' }));
+    assert.equal(posts, 1, `HTTP ${status} caused a duplicate video POST`);
+  }
+});
+
+test('a video submission connection failure is not automatically resubmitted', async () => {
+  let posts = 0;
+  const client = new AIWave({
+    apiKey: 'synthetic-only',
+    baseURL: 'https://example.invalid/v1',
+    fetch: async () => {
+      posts += 1;
+      throw new TypeError('synthetic connection failure');
+    },
+  });
+
+  await assert.rejects(client.video.generate({ prompt: 'synthetic prompt' }));
+  assert.equal(posts, 1);
+});
+
 test('poll timeout retains the task ID and avoids resubmission advice', async () => {
   const { client } = clientWithResponses({}, {});
   await assert.rejects(client.video.wait('synthetic-task', { timeout: 0 }), (error) => {

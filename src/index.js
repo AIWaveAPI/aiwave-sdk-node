@@ -21,6 +21,8 @@ class VideoAPI {
     if (!prompt) throw new Error('prompt is required');
     const resp = await this._client.post('/video/generations', {
       body: { model, prompt, ...rest },
+      // A transient response does not prove the provider rejected a paid job.
+      maxRetries: 0,
     });
     const data = resp?.data ?? resp;
     const taskId = data?.task_id ?? data?.id;
