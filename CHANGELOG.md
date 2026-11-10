@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Reject an explicitly empty or invalid `apiKey` instead of silently using an ambient `AIWAVE_API_KEY`. Omitting the option or passing `undefined` still uses the AIWave environment key.
+- Narrow the package description to supported routes; compatibility depends on the requested API operation.
+
 ## v0.2.1 (2026-11-08)
 
 - Fix API-key isolation: only an explicit `apiKey` or `AIWAVE_API_KEY` is accepted. `OPENAI_API_KEY` is never borrowed from another provider, and an undefined `apiKey` option cannot override the resolved AIWave key.
