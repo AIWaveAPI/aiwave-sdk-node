@@ -77,8 +77,10 @@ console.log(done.status);
 ```
 
 Video routes are experimental and need an eligible paid account group.
-Completion time varies. Keep the task ID and check its status and usage before
-submitting another paid job if polling times out.
+Completion time varies. The video submission method makes one POST and disables
+automatic SDK retries, including for 429 and 5xx responses. A timeout or
+transient error may still leave the outcome uncertain: check task history and
+usage before submitting another paid job. Keep the task ID if one was returned.
 
 ## What to verify before production
 
