@@ -17,9 +17,9 @@
 ## v0.2.0 (2026-11-04)
 
 - **AI video support** — `client.video.generate({ model, prompt })` submits a job, `client.video.status(taskId)` checks it, `client.video.wait(taskId)` polls until done (15 min default timeout, throws on upstream failure)
-- Video routes: Kling, Seedance, Hailuo, Wan, Vidu
-- Corrected catalog figures: 97 routes across 10 Chinese model families + international routes (was "48 models")
-- `MODEL_REFERENCE.md` is now auto-generated from the live public pricing endpoint — regenerate with `node scripts/gen_model_reference.py` instead of editing by hand
+- Video catalog IDs: Kling, Seedance, Hailuo, Wan, Vidu (availability depends on the key and route)
+- Corrected catalog figures: 97 model IDs on the public rate card across 10 Chinese families and other providers (was "48 models"); catalog presence does not prove route access or health
+- `MODEL_REFERENCE.md` is now auto-generated from the live public pricing endpoint — regenerate with `python3 scripts/gen_model_reference.py` instead of editing by hand
 - TypeScript definitions for the video API
 
 ## v0.1.0 (2026-06-20)
