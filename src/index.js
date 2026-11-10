@@ -18,7 +18,9 @@ class VideoAPI {
    * @returns {Promise<{taskId: string, status: string, raw: object}>}
    */
   async generate({ model = 'kling-v2-6', prompt, ...rest } = {}) {
-    if (!prompt) throw new Error('prompt is required');
+    if (typeof prompt !== 'string' || !prompt.trim()) {
+      throw new Error('prompt must be a non-empty string');
+    }
     const resp = await this._client.post('/video/generations', {
       body: { model, prompt, ...rest },
       // A transient response does not prove the provider rejected a paid job.

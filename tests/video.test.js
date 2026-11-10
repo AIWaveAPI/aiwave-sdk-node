@@ -78,6 +78,22 @@ test('missing task ID is not treated as successful submission', async () => {
   );
 });
 
+test('invalid video prompts are rejected before a paid submission', async () => {
+  let posts = 0;
+  const client = new AIWave({
+    apiKey: 'synthetic-only',
+    baseURL: 'https://example.invalid/v1',
+    fetch: async () => {
+      posts += 1;
+      throw new Error('request should not be sent');
+    },
+  });
+  for (const prompt of ['', '   ', null, {}]) {
+    await assert.rejects(client.video.generate({ prompt }), /non-empty string/);
+  }
+  assert.equal(posts, 0);
+});
+
 test('a transient video submission failure is not automatically resubmitted', async () => {
   for (const status of [429, 503]) {
     let posts = 0;
