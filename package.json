@@ -1,7 +1,7 @@
 {
   "name": "aiwave",
   "version": "0.2.1",
-  "description": "AIWave API — One API key for 97 AI routes (10 Chinese families + video). OpenAI compatible, drop-in replacement.",
+  "description": "AIWave client for compatible chat requests and AI video routes",
   "main": "src/index.js",
   "scripts": {
     "test": "node --test",

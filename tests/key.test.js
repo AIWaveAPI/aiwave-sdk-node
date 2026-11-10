@@ -38,3 +38,11 @@ test('explicit key wins, including when an option field is undefined', () => {
     assert.equal(new AIWave({ apiKey: undefined }).apiKey, 'synthetic-env');
   });
 });
+
+test('explicit empty or invalid key cannot silently use an environment key', () => {
+  withKeys({ AIWAVE_API_KEY: 'synthetic-env' }, () => {
+    for (const apiKey of ['', '   ', null]) {
+      assert.throws(() => new AIWave({ apiKey }), /AIWave API key/);
+    }
+  });
+});

@@ -85,8 +85,8 @@ class VideoAPI {
  */
 class AIWave extends OpenAI {
   constructor(options = {}) {
-    const apiKey = options.apiKey || process.env.AIWAVE_API_KEY;
-    if (!apiKey) {
+    const apiKey = options.apiKey === undefined ? process.env.AIWAVE_API_KEY : options.apiKey;
+    if (typeof apiKey !== 'string' || !apiKey.trim()) {
       throw new Error('AIWave API key required. Pass apiKey or set AIWAVE_API_KEY.');
     }
     super({
