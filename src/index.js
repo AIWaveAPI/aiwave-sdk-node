@@ -1,4 +1,5 @@
 const OpenAI = require('openai');
+const { performance } = require('node:perf_hooks');
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -74,8 +75,8 @@ class VideoAPI {
     if (typeof timeout !== 'number' || !Number.isFinite(timeout) || timeout < 0) {
       throw new Error('timeout must be a finite non-negative number of milliseconds');
     }
-    const deadline = Date.now() + timeout;
-    while (Date.now() < deadline) {
+    const deadline = performance.now() + timeout;
+    while (performance.now() < deadline) {
       const st = await this.status(taskId);
       // Generic tasks use SUCCESS/FAILURE; realtime and video adapters can
       // return succeeded/failed or completed/failed for the same task lifecycle.
@@ -84,7 +85,7 @@ class VideoAPI {
       if (status === 'failure' || status === 'failed') {
         throw new Error(`Video generation failed upstream: ${st.raw?.fail_reason ?? 'unknown'}`);
       }
-      await sleep(interval);
+      await sleep(Math.min(interval, Math.max(0, deadline - performance.now())));
     }
     throw new Error(
       `Video job ${taskId} did not finish within ${timeout / 1000}s. ` +

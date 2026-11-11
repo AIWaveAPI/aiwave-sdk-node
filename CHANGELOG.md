@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Stop video polling near its requested timeout instead of sleeping a full interval past the deadline; use a monotonic clock for elapsed time.
 - Recognize the generic and realtime video adapters' terminal status spellings so completed or failed jobs do not poll until timeout.
 - Refuse invalid video polling intervals and timeouts before any status request; intervals below one second or above Node's safe timer range can flood status checks.
 - Reject an explicitly empty or invalid `apiKey` instead of silently using an ambient `AIWAVE_API_KEY`. Omitting the option or passing `undefined` still uses the AIWave environment key.
