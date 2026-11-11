@@ -161,3 +161,18 @@ test('invalid polling cadence is rejected before any status request', async () =
   }
   assert.equal(seen.length, 0);
 });
+
+test('wait recognizes terminal statuses from realtime and OpenAI video adapters', async () => {
+  for (const status of ['succeeded', 'completed']) {
+    const { client, seen } = clientWithResponses({}, { data: { status } });
+    const result = await client.video.wait('synthetic-task', { interval: 1000, timeout: 10 });
+    assert.equal(result.status, status);
+    assert.equal(seen.length, 1);
+  }
+  const { client, seen } = clientWithResponses(
+    {}, { data: { status: 'failed', fail_reason: 'synthetic terminal failure' } }
+  );
+  await assert.rejects(client.video.wait('synthetic-task', { interval: 1000, timeout: 10 }),
+    /synthetic terminal failure/);
+  assert.equal(seen.length, 1);
+});
