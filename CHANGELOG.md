@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Refuse invalid video polling intervals and timeouts before any status request; intervals below one second or above Node's safe timer range can flood status checks.
 - Reject an explicitly empty or invalid `apiKey` instead of silently using an ambient `AIWAVE_API_KEY`. Omitting the option or passing `undefined` still uses the AIWave environment key.
 - Reject empty, whitespace-only, or non-string video prompts locally before sending a paid submission.
 - Narrow the package description to supported routes; compatibility depends on the requested API operation.

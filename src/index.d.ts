@@ -26,9 +26,9 @@ declare namespace AIWave {
   }
 
   export interface VideoWaitOptions {
-    /** Milliseconds between polls (default 15000) */
+    /** Milliseconds between polls (1000–2147483647; default 15000) */
     interval?: number;
-    /** Total milliseconds to wait (default 900000 = 15 min) */
+    /** Finite, non-negative total milliseconds to wait (default 900000 = 15 min) */
     timeout?: number;
     /** If false, return current status without polling */
     poll?: boolean;

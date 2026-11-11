@@ -146,3 +146,18 @@ test('poll timeout retains the task ID and avoids resubmission advice', async ()
     return true;
   });
 });
+
+test('invalid polling cadence is rejected before any status request', async () => {
+  const { client, seen } = clientWithResponses({}, { data: { status: 'IN_PROGRESS' } });
+  for (const options of [
+    { interval: 0, timeout: 20 },
+    { interval: NaN, timeout: 20 },
+    { interval: Infinity, timeout: 20 },
+    { interval: 2 ** 31, timeout: 20 },
+    { interval: 1000, timeout: NaN },
+    { interval: 1000, timeout: Infinity },
+  ]) {
+    await assert.rejects(client.video.wait('synthetic-task', options), /interval|timeout/);
+  }
+  assert.equal(seen.length, 0);
+});
