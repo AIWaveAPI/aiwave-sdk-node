@@ -62,9 +62,18 @@ class VideoAPI {
    * Poll a job until it succeeds, fails, or times out.
    * @param {string} taskId
    * @param {{interval?: number, timeout?: number, poll?: boolean}} opts
+   * interval is 1,000–2,147,483,647 milliseconds; timeout is non-negative.
    */
   async wait(taskId, { interval = 15000, timeout = 900000, poll = true } = {}) {
     if (!poll) return this.status(taskId);
+    // Node clamps overflowing timers to 1 ms, which would flood status GETs.
+    if (typeof interval !== 'number' || !Number.isFinite(interval) ||
+        interval < 1000 || interval > 2147483647) {
+      throw new Error('interval must be a finite number from 1000 to 2147483647 milliseconds');
+    }
+    if (typeof timeout !== 'number' || !Number.isFinite(timeout) || timeout < 0) {
+      throw new Error('timeout must be a finite non-negative number of milliseconds');
+    }
     const deadline = Date.now() + timeout;
     while (Date.now() < deadline) {
       const st = await this.status(taskId);
