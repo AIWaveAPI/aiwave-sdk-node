@@ -77,8 +77,11 @@ class VideoAPI {
     const deadline = Date.now() + timeout;
     while (Date.now() < deadline) {
       const st = await this.status(taskId);
-      if (st.status === 'SUCCESS') return st;
-      if (st.status === 'FAILURE') {
+      // Generic tasks use SUCCESS/FAILURE; realtime and video adapters can
+      // return succeeded/failed or completed/failed for the same task lifecycle.
+      const status = typeof st.status === 'string' ? st.status.toLowerCase() : '';
+      if (status === 'success' || status === 'succeeded' || status === 'completed') return st;
+      if (status === 'failure' || status === 'failed') {
         throw new Error(`Video generation failed upstream: ${st.raw?.fail_reason ?? 'unknown'}`);
       }
       await sleep(interval);
