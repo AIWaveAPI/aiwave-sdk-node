@@ -83,15 +83,14 @@ class VideoAPI {
         'Keep the task ID and check its status and usage before submitting another paid job.'
     );
     while (performance.now() < deadline) {
-      // Bound the GET itself, not only the sleep between polls. Disable the
-      // OpenAI client's automatic retries so one GET cannot overrun the wait.
+      // Bound the GET and any safe GET retries, not only the sleep between polls.
       const remaining = Math.min(2147483647, Math.max(1, Math.ceil(deadline - performance.now())));
       let st;
       let timer;
       const controller = new AbortController();
       try {
         st = await Promise.race([
-          this.status(taskId, { timeout: remaining, maxRetries: 0, signal: controller.signal }),
+          this.status(taskId, { timeout: remaining, signal: controller.signal }),
           new Promise((_, reject) => {
             timer = setTimeout(() => {
               reject(timedOut());
