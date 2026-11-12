@@ -1,6 +1,6 @@
 {
   "name": "aiwave",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "AIWave client for compatible chat requests and AI video routes",
   "main": "src/index.js",
   "scripts": {
