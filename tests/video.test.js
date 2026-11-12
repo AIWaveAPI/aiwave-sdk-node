@@ -253,3 +253,27 @@ test('wait continues to use an overridden status method', async () => {
   assert.equal(result.status, 'SUCCESS');
   assert.equal(called, 1);
 });
+
+test('wait preserves safe status GET retries within the deadline', async () => {
+  let requests = 0;
+  const client = new AIWave({
+    apiKey: 'synthetic-only',
+    baseURL: 'https://example.invalid/v1',
+    fetch: async () => {
+      requests += 1;
+      if (requests === 1) {
+        return new Response(JSON.stringify({ error: { message: 'temporary' } }), {
+          status: 503,
+          headers: { 'content-type': 'application/json', 'retry-after': '0' },
+        });
+      }
+      return new Response(JSON.stringify({ data: { status: 'SUCCESS' } }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    },
+  });
+  const result = await client.video.wait('synthetic-task', { interval: 1000, timeout: 1000 });
+  assert.equal(result.status, 'SUCCESS');
+  assert.equal(requests, 2);
+});
