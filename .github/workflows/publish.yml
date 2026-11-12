@@ -1,0 +1,66 @@
+name: Publish npm package
+
+on:
+  release:
+    types: [published]
+
+permissions: {}
+
+jobs:
+  build:
+    if: github.repository == 'AIWaveAPI/aiwave-sdk-node' && !github.event.release.prerelease
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Verify release source and version
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          test "$(node -p 'require("./package.json").version')" = "${GITHUB_REF_NAME#v}"
+          git fetch origin main
+          git merge-base --is-ancestor HEAD origin/main
+      - run: npm install --ignore-scripts --no-package-lock
+      - run: npm test
+      - run: npm run test:types
+      - run: mkdir -p dist && npm pack --pack-destination dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npm-package
+          path: dist/aiwave-*.tgz
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: npm-package
+          path: dist
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Publish the exact tested archive with OIDC
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --global 'npm@^11.5.1'
+          test -f "dist/aiwave-${GITHUB_REF_NAME#v}.tgz"
+          npm publish "dist/aiwave-${GITHUB_REF_NAME#v}.tgz" --access public
+
