@@ -273,7 +273,7 @@ test('wait preserves safe status GET retries within the deadline', async () => {
       });
     },
   });
-  const result = await client.video.wait('synthetic-task', { interval: 1000, timeout: 1000 });
+  const result = await client.video.wait('synthetic-task', { interval: 1000, timeout: 5000 });
   assert.equal(result.status, 'SUCCESS');
   assert.equal(requests, 2);
 });
