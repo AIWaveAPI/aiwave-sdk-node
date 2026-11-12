@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { performance } = require('node:perf_hooks');
 const AIWave = require('../src/index.js');
 
 function clientWithResponses(submit, poll) {
@@ -175,4 +176,14 @@ test('wait recognizes terminal statuses from realtime and OpenAI video adapters'
   await assert.rejects(client.video.wait('synthetic-task', { interval: 1000, timeout: 10 }),
     /synthetic terminal failure/);
   assert.equal(seen.length, 1);
+});
+
+test('poll timeout does not sleep past the requested deadline', async () => {
+  const { client, seen } = clientWithResponses({}, { data: { status: 'IN_PROGRESS' } });
+  const started = performance.now();
+  await assert.rejects(client.video.wait('synthetic-task', { interval: 1000, timeout: 40 }),
+    /did not finish/);
+  const elapsed = performance.now() - started;
+  assert.ok(elapsed < 700, `40 ms timeout took ${elapsed} ms`);
+  assert.ok(seen.length >= 1 && seen.length <= 2, `unexpected polling count: ${seen.length}`);
 });
