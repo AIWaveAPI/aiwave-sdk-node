@@ -62,5 +62,5 @@ jobs:
           set -euo pipefail
           npm install --global 'npm@^11.5.1'
           test -f "dist/aiwave-${GITHUB_REF_NAME#v}.tgz"
-          npm publish "dist/aiwave-${GITHUB_REF_NAME#v}.tgz" --access public
+          npm publish "./dist/aiwave-${GITHUB_REF_NAME#v}.tgz" --access public
 
