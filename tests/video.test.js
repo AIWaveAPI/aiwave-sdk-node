@@ -187,3 +187,93 @@ test('poll timeout does not sleep past the requested deadline', async () => {
   assert.ok(elapsed < 700, `40 ms timeout took ${elapsed} ms`);
   assert.ok(seen.length >= 1 && seen.length <= 2, `unexpected polling count: ${seen.length}`);
 });
+
+test('poll timeout also bounds a slow status request', async () => {
+  let requests = 0;
+  const client = new AIWave({
+    apiKey: 'synthetic-only',
+    baseURL: 'https://example.invalid/v1',
+    // Keep the default OpenAI retry policy to verify wait overrides it.
+    fetch: async (_url, options) => {
+      requests += 1;
+      await new Promise((resolve, reject) => {
+        const timer = setTimeout(resolve, 250);
+        options.signal.addEventListener('abort', () => {
+          clearTimeout(timer);
+          reject(new DOMException('Aborted', 'AbortError'));
+        }, { once: true });
+      });
+      return new Response(JSON.stringify({ data: { status: 'SUCCESS' } }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    },
+  });
+
+  const started = performance.now();
+  await assert.rejects(client.video.wait('synthetic-task', { interval: 1000, timeout: 40 }),
+    /did not finish/);
+  const elapsed = performance.now() - started;
+  assert.ok(elapsed < 200, `40 ms timeout took ${elapsed} ms`);
+  assert.equal(requests, 1);
+});
+
+test('poll timeout returns on time even when custom fetch ignores abort', async () => {
+  const client = new AIWave({
+    apiKey: 'synthetic-only',
+    baseURL: 'https://example.invalid/v1',
+    fetch: async () => {
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      return new Response(JSON.stringify({ data: { status: 'SUCCESS' } }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    },
+  });
+
+  const started = performance.now();
+  await assert.rejects(client.video.wait('synthetic-task', { interval: 1000, timeout: 40 }),
+    /did not finish/);
+  const elapsed = performance.now() - started;
+  assert.ok(elapsed < 200, `40 ms timeout took ${elapsed} ms`);
+});
+
+test('wait continues to use an overridden status method', async () => {
+  let called = 0;
+  const client = new AIWave({
+    apiKey: 'synthetic-only',
+    baseURL: 'https://example.invalid/v1',
+    fetch: async () => { throw new Error('unexpected network request'); },
+  });
+  client.video.status = async () => {
+    called += 1;
+    return { status: 'SUCCESS' };
+  };
+  const result = await client.video.wait('synthetic-task', { interval: 1000, timeout: 100 });
+  assert.equal(result.status, 'SUCCESS');
+  assert.equal(called, 1);
+});
+
+test('wait preserves safe status GET retries within the deadline', async () => {
+  let requests = 0;
+  const client = new AIWave({
+    apiKey: 'synthetic-only',
+    baseURL: 'https://example.invalid/v1',
+    fetch: async () => {
+      requests += 1;
+      if (requests === 1) {
+        return new Response(JSON.stringify({ error: { message: 'temporary' } }), {
+          status: 503,
+          headers: { 'content-type': 'application/json', 'retry-after': '0' },
+        });
+      }
+      return new Response(JSON.stringify({ data: { status: 'SUCCESS' } }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    },
+  });
+  const result = await client.video.wait('synthetic-task', { interval: 1000, timeout: 5000 });
+  assert.equal(result.status, 'SUCCESS');
+  assert.equal(requests, 2);
+});

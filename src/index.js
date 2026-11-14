@@ -46,11 +46,13 @@ class VideoAPI {
    * Check a video job's status.
    * @returns {Promise<{status: string, progress: string, raw: object}>}
    */
-  async status(taskId) {
+  async status(taskId, requestOptions) {
     if (typeof taskId !== 'string' || !taskId) {
       throw new Error('status requires a non-empty task ID');
     }
-    const resp = await this._client.get(`/video/generations/${encodeURIComponent(taskId)}`);
+    const resp = await this._client.get(
+      `/video/generations/${encodeURIComponent(taskId)}`, requestOptions
+    );
     const data = resp?.data ?? resp;
     return {
       status: data?.status ?? 'unknown',
@@ -76,8 +78,33 @@ class VideoAPI {
       throw new Error('timeout must be a finite non-negative number of milliseconds');
     }
     const deadline = performance.now() + timeout;
+    const timedOut = () => new Error(
+      `Video job ${taskId} did not finish within ${timeout / 1000}s. ` +
+        'Keep the task ID and check its status and usage before submitting another paid job.'
+    );
     while (performance.now() < deadline) {
-      const st = await this.status(taskId);
+      // Bound the GET and any safe GET retries, not only the sleep between polls.
+      const remaining = Math.min(2147483647, Math.max(1, Math.ceil(deadline - performance.now())));
+      let st;
+      let timer;
+      const controller = new AbortController();
+      try {
+        st = await Promise.race([
+          this.status(taskId, { timeout: remaining, signal: controller.signal }),
+          new Promise((_, reject) => {
+            timer = setTimeout(() => {
+              reject(timedOut());
+              controller.abort();
+            }, remaining);
+          }),
+        ]);
+      } catch (error) {
+        if (performance.now() >= deadline) throw timedOut();
+        throw error;
+      } finally {
+        clearTimeout(timer);
+      }
+      if (performance.now() >= deadline) throw timedOut();
       // Generic tasks use SUCCESS/FAILURE; realtime and video adapters can
       // return succeeded/failed or completed/failed for the same task lifecycle.
       const status = typeof st.status === 'string' ? st.status.toLowerCase() : '';
@@ -87,10 +114,7 @@ class VideoAPI {
       }
       await sleep(Math.min(interval, Math.max(0, deadline - performance.now())));
     }
-    throw new Error(
-      `Video job ${taskId} did not finish within ${timeout / 1000}s. ` +
-        'Keep the task ID and check its status and usage before submitting another paid job.'
-    );
+    throw timedOut();
   }
 }
 
