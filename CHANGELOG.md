@@ -11,6 +11,7 @@ Documentation-only release. No runtime or type changes.
 - Document how to set `AIWAVE_API_KEY` before running the examples.
 - Replace the video example's CommonJS `require` plus top-level `await` combination — which fails to parse as either `.mjs` or `.cjs` — with an ESM script run via `node video.mjs`.
 - Note that `kling-v2-6` is per-call while some Seedance IDs are token-priced, so `quota_type` has to be checked before estimating video spend.
+- `AGENTS.md` no longer hard-codes a model count. `/api/v1/pricing` is documented as the frozen 2026-10-24 51-row snapshot it actually is, not as a live source. The two endpoints share only 44 IDs.
 
 ## v0.2.2 (2026-11-13)
 
