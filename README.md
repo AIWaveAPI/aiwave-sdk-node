@@ -1,20 +1,32 @@
 # AIWave Node.js SDK
 
-**One OpenAI-compatible API for Chinese AI models and video. 91 model IDs on the public rate card, 10 Chinese families, 13 video IDs on the public rate card.**
+**OpenAI-compatible chat for catalog-listed model IDs, with video on a separate API path.**
 
 [![npm version](https://img.shields.io/npm/v/aiwave)](https://www.npmjs.com/package/aiwave)
 [![Models](https://img.shields.io/badge/model%20IDs-91-blue)](https://aiwave.live/models)
 [![Video](https://img.shields.io/badge/video%20IDs-13-purple)](https://aiwave.live/models)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-AIWave gives developers one OpenAI-compatible API route for Chinese AI model families — DeepSeek, GLM, Kimi, Qwen, MiniMax, Doubao, StepFun, MiMo — plus AI video routes (Kling, Seedance, Hailuo, Wan, Vidu).
+The live card lists 91 model IDs on the public rate card across 10 Chinese
+model families and international providers. Of those 91 IDs, 13 video IDs on
+the public rate card are for video generation, so the video count is a subset
+and not an additional 13. Chat requests use the OpenAI-compatible path below;
+video jobs use separate `/video/generations` methods and are not Chat
+Completions requests.
 
-The counts describe catalog-listed IDs, not access for a particular key or live
-route health. Test the exact model and operation before production use.
+These counts describe catalog-listed IDs only. They are not access for a
+particular key and not live route health; test the exact model and operation
+before production use.
 
 Get a key at [aiwave.live/register](https://aiwave.live/register).
 
-Use this SDK when you want a Node.js client path to AIWave while keeping model IDs, dated USD rates, and request-level usage evidence visible during testing.
+Set `AIWAVE_API_KEY` through the secure shell setup in the
+[Quickstart](https://github.com/AIWaveAPI/aiwave-quickstart#1-set-your-environment),
+then run the examples below. The client throws if neither an explicit `apiKey`
+nor `AIWAVE_API_KEY` is set.
+
+Use this client for the supported chat methods below. It also exposes the
+experimental video job methods shown later in this README.
 
 ## Installation
 
@@ -62,12 +74,18 @@ console.log(response.usage);
 
 ## AI video
 
-One key, video routes on Kling, Seedance, Hailuo, Wan and Vidu.
+Video routes on Kling, Seedance, Hailuo, Wan and Vidu use the same key but a
+separate API path from chat. Video IDs are a subset of the 91 catalog IDs; not
+every video ID bills the same way. `kling-v2-6` is per-call, while some
+Seedance IDs are token-priced. Check `quota_type` in the live card before
+estimating spend.
+
+Save this as `video.mjs` and run it with `node video.mjs`:
 
 ```js
-const AIWave = require('aiwave');
+import AIWave from 'aiwave';
 
-const client = new AIWave({ apiKey: 'YOUR_API_KEY_HERE' });
+const client = new AIWave({ apiKey: process.env.AIWAVE_API_KEY });
 
 const job = await client.video.generate({
   model: 'kling-v2-6',
@@ -78,6 +96,9 @@ console.log(job.taskId);
 const done = await client.video.wait(job.taskId);  // polls every 15s, 15 min max
 console.log(done.status);
 ```
+
+`import` rather than `require` is required for the top-level `await` above. A
+CommonJS script works too, but it must wrap the calls in an async function.
 
 Video routes are experimental and need an eligible paid account group.
 Completion time varies. The video submission method makes one POST and disables

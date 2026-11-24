@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## v0.2.3 (2026-11-24)
+
+Documentation-only release. No runtime or type changes.
+
+- State that the 13 video IDs are a subset of the 91 catalog IDs, not an additional set.
+- Separate the OpenAI-compatible chat path from the experimental video path in the README introduction, and drop the claim that the client surfaces rates or usage evidence.
+- Document how to set `AIWAVE_API_KEY` before running the examples.
+- Replace the video example's CommonJS `require` plus top-level `await` combination — which fails to parse as either `.mjs` or `.cjs` — with an ESM script run via `node video.mjs`.
+- Note that `kling-v2-6` is per-call while some Seedance IDs are token-priced, so `quota_type` has to be checked before estimating video spend.
+
 ## v0.2.2 (2026-11-13)
 
 - Stop video polling near its requested timeout instead of sleeping a full interval past the deadline; use a monotonic clock for elapsed time.
